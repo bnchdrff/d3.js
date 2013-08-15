@@ -4,6 +4,9 @@
         <meta charset="utf-8">
         <title>D3 Test Ledger Summary</title>
         <script type="text/javascript" src="d3.v3/d3.v3.js"></script>
+        <!-- live data
+        <script type="text/javascript" src="jsonp.js"></script>
+        -->
         <style type="text/css">
             div.bar {
                 display: inline-block;
@@ -16,6 +19,30 @@
     </head>
     <body>
         <script type="text/javascript">
+
+// store organizations here
+var orgs = [];
+
+// fetch data from dev site
+/*
+d3.jsonp('http://aug2013.dev.detroitledger.org/api/1.0/views/orgs.jsonp/?display_id=org_totals_services&callback={callback}', function(data) {
+  orgs = data;
+});
+*/
+
+// or use a locally cached file!
+// like this:
+//   curl 'http://aug2013.dev.detroitledger.org/api/1.0/views/orgs.jsonp/?display_id=org_totals_services&callback=iamacallback' > orgs.js
+// and then we fake a JSONP request...
+iamacallback = function(data) {
+  orgs = data;
+  // let's sort by received grant total, largest to smallest.
+  orgs = orgs.sort(function(a,b) { 
+      return parseInt(a.org_grants_received) > parseInt(b.org_grants_received) ? 1 : -1;
+  });
+  // also put other data-reliant stuff in this callback!
+};
+
         var dataset = [6354000,21187322,9915500,5915351,6583000,64300067,30930743,50927070,8740000,17593760.65,32213262,20611254.30,21969136,6981283,6251015,3328700,14681000,12299755,503378.9];
             d3.select("body").selectAll("div")
             .data(dataset)
@@ -27,5 +54,7 @@
                 return barHeight + "px";
             });
         </script>
+        <!-- dev data -->
+        <script type="text/javascript" src="orgs.js"></script>
     </body>
 </html>  
